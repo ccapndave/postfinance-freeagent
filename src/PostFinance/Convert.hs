@@ -19,7 +19,7 @@ convert :: String -> IO ()
 convert filename =
   do
     fileData <- readAndDecodeFile filename
-    case toEntries fileData of
+    case toEntries filename fileData of
       Right entries ->
         TIO.putStr $ build entries
       Left err ->
@@ -39,7 +39,7 @@ readAndDecodeFile filename =
       Nothing ->
         error "Can't detect file encoding"
 
-toEntries :: Text -> Either String [Entry]
-toEntries text =
-  Megaparsec.runParser parser "filename" text
+toEntries :: String -> Text -> Either String [Entry]
+toEntries filename text =
+  Megaparsec.runParser parser filename text
     & first Megaparsec.errorBundlePretty
