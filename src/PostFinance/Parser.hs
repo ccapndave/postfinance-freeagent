@@ -53,7 +53,7 @@ entryParser header =
       toFloat text =
         case T.unpack text of
           "" -> Just 0.0
-          value -> readMaybe value
+          value -> readMaybe value <&> abs
 
       mkEntry :: [Text] -> Maybe Entry
       mkEntry row =

@@ -17,6 +17,6 @@ entryToRow Entry {date, credit, debit, details} =
   T.intercalate
     ","
     [ T.pack $ Time.formatTime Time.defaultTimeLocale "%d/%m/%Y" date,
-      T.pack $ show $ credit + debit,
+      T.pack $ show $ credit - debit,
       "\"" <> details <> "\""
     ]
