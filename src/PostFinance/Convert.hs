@@ -34,6 +34,8 @@ readAndDecodeFile filename =
         pure $ TE.decodeLatin1 (L.toStrict bs)
       Just "ASCII" ->
         pure $ TE.decodeUtf8 (L.toStrict bs)
+      Just "UTF-8" ->
+        pure $ TE.decodeUtf8 (L.toStrict bs)
       Just encoding ->
         error $ "Unknown file encoding " <> encoding
       Nothing ->

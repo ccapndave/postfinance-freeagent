@@ -9,3 +9,7 @@ It was also a grand opportunity for me to play around with Haskell :)
 # Installing
 
 * Run `stack install` to install a global `postfinance-freeagent` file.
+
+# Notes
+
+ - As of the latest Postfinance update, its necessary to remove any `=` from header rows (apart from the real header) and it might be necessary to manually convert the file from `UTF-8 with BOM` to `UTF-8`

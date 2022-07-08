@@ -10,6 +10,7 @@ import qualified RIO.Text as T
 import RIO.Time (Day)
 import qualified RIO.Time as Time
 import Text.Megaparsec
+import Text.Megaparsec.Debug
 import Text.Megaparsec.Char hiding (newline)
 
 type Parser = Parsec Void Text
@@ -19,6 +20,7 @@ parser =
   do
     header <- rowParser `skipManyTill` headerParser
     entries <- entryParser header `manyTill` footerParser
+
     pure $ catMaybes entries
 
 headerParser :: Parser [Text]
@@ -46,19 +48,20 @@ entryParser header =
       findEntry row headerName =
         (row !!) <$> List.elemIndex headerName header
 
-      toDate :: Text -> Maybe Day
-      toDate = T.unpack >>> Time.parseTimeM True Time.defaultTimeLocale "%Y-%m-%d"
+      toDate :: String -> Text -> Maybe Day
+      toDate pattern text = T.unpack >>> Time.parseTimeM True Time.defaultTimeLocale pattern $ text
 
+      -- Remove any ' characters that PF put in the value (e.g. 1'000.00) and parse the float
       toFloat :: Text -> Maybe Float
       toFloat text =
-        case T.unpack text of
+        case filter (/= '\'') . T.unpack $ text of
           "" -> Just 0.0
           value -> readMaybe value <&> abs
 
       mkEntry :: [Text] -> Maybe Entry
       mkEntry row =
         Entry
-          <$> ((findEntry row "Date" <|> findEntry row "Booking date") >>= toDate)
+          <$> ((findEntry row "Date" >>= toDate "%Y-%m-%d") <|> (findEntry row "Booking date" >>= toDate "%d.%m.%Y")) 
           <*> (findEntry row "Credit in CHF" >>= toFloat)
           <*> (findEntry row "Debit in CHF" >>= toFloat)
           <*> (findEntry row "Notification text" <|> findEntry row "Category")
