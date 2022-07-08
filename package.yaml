@@ -44,7 +44,7 @@ executables:
     dependencies:
       - postfinance-freeagent
       - optparse-simple
-
+      
     ghc-options:
       - -threaded
       - -rtsopts
